@@ -14,6 +14,7 @@ type config struct {
 	Width, Height int
 	Offset        int
 	Caption       string
+	FixedXAxis    []float64
 }
 
 // An optionFunc applies an option.
@@ -63,5 +64,12 @@ func Offset(o int) Option {
 func Caption(caption string) Option {
 	return optionFunc(func(c *config) {
 		c.Caption = strings.TrimSpace(caption)
+	})
+}
+
+// FixedXAxis sets the graphs x axis. Must be the same lengh as provided series
+func FixedXAxis(data []float64) Option {
+	return optionFunc(func(c *config) {
+		c.FixedXAxis = data
 	})
 }

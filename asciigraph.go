@@ -14,12 +14,26 @@ func Plot(series []float64, options ...Option) string {
 		Offset: 3,
 	}, options)
 
-	if config.Width > 0 {
+	fixedX := len(config.FixedXAxis) > 0
+
+	if fixedX && len(series) != len(config.FixedXAxis) {
+		panic(fmt.Errorf("xAxis and series must be the same length if xAxis is provided: %d != %d", len(series), len(config.FixedXAxis)))
+	}
+
+	if fixedX && config.Width > 0 {
+		//do flat interpolation
+	} else if config.Width > 0 {
 		series = interpolateArray(series, config.Width)
 	}
 
 	minimum, maximum := minMaxFloat64Slice(series)
 	interval := math.Abs(maximum - minimum)
+
+	// var xminimum, xmaximum, xinterval float64
+	// if fixedX {
+	// 	xminimum, xmaximum = minMaxFloat64Slice(config.FixedXAxis)
+	// 	xinterval = math.Abs(xmaximum - xminimum)
+	// }
 
 	if config.Height <= 0 {
 		if int(interval) <= 0 {
@@ -101,6 +115,10 @@ func Plot(series []float64, options ...Option) string {
 			plot[w][config.Offset-1] = "┤"
 		}
 	}
+
+	// for x := intmin2; x < intmax2-1; x++ {
+	// 	"┬"
+	// }
 
 	y0 := int(round(series[0]*ratio) - min2)
 	var y1 int
